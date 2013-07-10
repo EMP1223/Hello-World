@@ -43,6 +43,6 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, pct_to_plot 
 	if (plot_orig_pts){ #indicate the fitted values associated with observed xj values
 		yhat_actual = amdpobj$actual_prediction[plot_points_indices]
 		xj = amdpobj$xj[plot_points_indices]
-		points(xj, yhat_actual, col = "black", pch = 16, cex = 10.5)
+		points(xj, yhat_actual, col = "black", pch = 16, cex = 1.5)
 	}
 }
