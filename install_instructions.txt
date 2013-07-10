@@ -1,0 +1,2 @@
+#in linux:
+R CMD INSTALL --build pkg /path/to/advanced_marginal_dependence_plots/amdp
