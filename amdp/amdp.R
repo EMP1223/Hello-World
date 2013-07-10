@@ -1,5 +1,3 @@
-#creates curves.
-
 amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, ...){
 
 	######## (1) check inputs
@@ -34,6 +32,11 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, ...){
 	######## (2)
 	# generate partials
 	xj = X[, j]  #fix so predictor can be given as a name.
+	if(use_generic){
+		actual_prediction = predict(object, X)
+	}else{
+		actual_prediction = predictfcn(object = object, newdata = X)
+	}
 
 	#now create xj-to-predict values
 	grid_pts = sort(unique(xj))
@@ -55,7 +58,13 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, ...){
 	}
 	if(verbose){cat("\n")}
 	
-	obj_to_return = list(apdps=apdps, gridpts = grid_pts)
+	if(!is.null(colnames(X)){
+		predictor = colnames(X)[j]
+	}else{
+		predictor = j
+	}
+	obj_to_return = list(apdps=apdps, gridpts = grid_pts, predictor = predictor, xj = xj,
+						 actual_prediction = actual_prediction)
 	class(obj_to_return) = "amdp"
 	
 	if(plot){	#call plot function of our definition.
@@ -64,5 +73,4 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, ...){
 	
 	invisible(obj_to_return)
 } 
-temp = amdp(rf,X[1:10,],1)
 
