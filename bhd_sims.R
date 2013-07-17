@@ -22,7 +22,6 @@ source("r_scripts/bart_package_plots.R")
 source("r_scripts/bart_package_variable_selection.R")
 source("r_scripts/bart_package_f_tests.R")
 source("r_scripts/bart_package_summaries.R")
-source("r_scripts/amdp_stuff/amdp.R")
 
 #get the Boston housing data
 data(Boston)
@@ -32,7 +31,7 @@ y = X$medv
 X$medv = NULL
 
 bart_machine = build_bart_machine(X, y)
-apdp(bart_machine, X, "lstat", num_grid_pts = 30)
+amdp(bart_machine, X, "lstat")
 
 
 lm_mod = lm(medv ~ ., Boston)

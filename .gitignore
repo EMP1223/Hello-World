@@ -1,3 +1,5 @@
-~*
+*~*
 *.gz
 *.swp
+.project
+install_instructions.txt

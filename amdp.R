@@ -9,9 +9,9 @@ for (i in 1 : 500){
 
 ORD_VAR_MAX_NUM_LEVELS = 5
 
-apdp = function(model, X, j, num_grid_pts = 50, xtest_margin = 0, plot_margin = 0.05, pct_to_plot = 1, plot_orig_pts = TRUE, colorvec = COLORS, ...){
-	if (length(colorvec) < nrow(X)){
-		stop("color vector has length ", length(colorvec), " but there are ", nrow(X), " rows in the data")
+apdp = function(model, X, j, num_grid_pts = 50, xtest_margin = 0, plot_margin = 0.05, pct_to_plot = 1, plot_orig_pts = TRUE, colors = COLORS, ...){
+	if (length(colors) < nrow(X)){
+		stop("color vector has length ", length(colors), " but there are ", nrow(X), " rows in the data")
 	}
 	
 	xj = X[, j]
@@ -36,7 +36,7 @@ apdp = function(model, X, j, num_grid_pts = 50, xtest_margin = 0, plot_margin = 
 	#now pull out which xi's we're going to look at as well as their corresponding colors
 	plot_points_indices = which(as.logical(rbinom(n, 1, pct_to_plot)))
 	X_with_gridded_xj = as.data.frame(X)[plot_points_indices, ]
-	colorvec = colorvec[plot_points_indices]
+	colors = colors[plot_points_indices]
 	
 	apdps = matrix(NA, nrow(X_with_gridded_xj), num_grid_pts)
 	colnames(apdps) = pred_test_values
@@ -64,7 +64,7 @@ apdp = function(model, X, j, num_grid_pts = 50, xtest_margin = 0, plot_margin = 
 	#plot all the prediction lines
 	plot(pred_test_values, apdps[1, ], type = "n", ylim = c(min_apdps, max_apdps), xlab = xlab, ylab = expression(hat(y)))
 	for (i in 1 : nrow(X_with_gridded_xj)){
-		points(pred_test_values, apdps[i, ], col = colorvec[i], type = "l")
+		points(pred_test_values, apdps[i, ], col = colors[i], type = "l")
 	}
 	if (plot_orig_pts){
 		#now plot all the points for the observatiosn because they are useful to see
@@ -73,7 +73,7 @@ apdp = function(model, X, j, num_grid_pts = 50, xtest_margin = 0, plot_margin = 
 		yhat = predict(model, X_with_gridded_xj)
 		for (i in 1 : nrow(X_with_gridded_xj)){
 			points(xj[i], yhat[i], col = "black", pch = 16, cex = 1.5)
-			points(xj[i], yhat[i], col = colorvec[i], pch = 16)
+			points(xj[i], yhat[i], col = colors[i], pch = 16)
 		}
 	}
 	

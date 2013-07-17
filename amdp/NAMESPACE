@@ -1,3 +1,2 @@
 exportPattern("amdp")
-
 S3method(plot, amdp)
