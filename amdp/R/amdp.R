@@ -1,5 +1,15 @@
-amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, ...){
+amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_build = 1, plot_logit = F, ...){
 
+	#check for factor
+	if (class(X[, j]) == "factor" || class(X[, j]) == "character"){
+		stop("AMDP does not support factor attributes")
+	}
+	
+	#warning
+	if(plot_logit){
+		warning("logit only defined for binary classification")
+	}
+	
 	######## (1) check inputs
 	# (a) check for valid prediction routine...
 	if(!missing(predictfcn)){
@@ -30,16 +40,32 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, ...){
 	}
 
 	######## (2)
+	N = nrow(X)
+	# grid points
+	#now create xj-to-predict values
+	xj = X[, j]  #fix so predictor can be given as a name. 
+	grid_pts = sort(X[,j])
+	
+	# check fraction to build
+	if(frac_to_build < 1){
+		# we don't sample randomly -- we ensure uniform sampling across
+		# quantiles of xj so as to not leave out portions of the dist'n of x.
+		order_xj = order(xj)
+		X = X[order_xj, ]  #ordered by column xj 	
+		nskip = round( (1 / frac_to_build) )
+		X = X[seq(1, N, by = nskip), ]
+		xj = X[, j]
+	}
+	
 	# generate partials
-	xj = X[, j]  #fix so predictor can be given as a name.
 	if(use_generic){
 		actual_prediction = predict(object, X)
 	}else{
 		actual_prediction = predictfcn(object = object, newdata = X)
 	}
-
-	#now create xj-to-predict values
-	grid_pts = sort(unique(xj))
+	if(plot_logit){
+		actual_prediction = log(actual_prediction) - (1/2)*(log(actual_prediction)+log(1 - actual_prediction)) 
+	}
 	
 	apdps = matrix(NA, nrow=nrow(X), ncol=length(grid_pts))
 	colnames(apdps) = grid_pts
@@ -72,5 +98,4 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, ...){
 	}
 	
 	invisible(obj_to_return)
-} 
-
+}
