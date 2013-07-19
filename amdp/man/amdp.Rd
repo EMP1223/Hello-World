@@ -54,6 +54,25 @@ before the object is returned.
 }
 \examples{
 \dontrun{
-	#example goes here. 
+require(randomForest)
+require(mlbench)
+library(amdp)
+data(PimaIndiansDiabetes)
+
+#fit a random forest
+pima_rf = randomForest(diabetes~., PimaIndiansDiabetes)
+
+#define a predict function that returns Prob(diabetes=pos)
+pima_predict = function(object, newdata){
+	preds = predict(object, newdata, type="prob")
+	col_idx = which(colnames(preds)=="pos")
+	preds[,col_idx] 
+}
+
+#get amdp object for the 'glucose' predictor, but converted to logit.
+pima_amdp = amdp(pima_rf, X = PimaIndiansDiabetes[,1:8], j = "glucose", predictfcn = pima_predict, plot_logit = T)
+
+#plot
+plot(pima_amdp, x_quantile = T)
 }
 }
