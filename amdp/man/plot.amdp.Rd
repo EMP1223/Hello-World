@@ -9,7 +9,7 @@ Plots an amdp object.
 }
 \usage{
 plot.amdp(amdpobj, xtest_margin = 0, plot_margin = 0.05, pct_to_plot = 1, 
-		 plot_orig_pts = TRUE, colorvec, x_quantile = FALSE, ...)
+		 plot_orig_pts = TRUE, colorvec, x_quantile = FALSE, plot_pdp = FALSE, ...)
 }
 \arguments{
   \item{amdpobj}{
@@ -34,6 +34,11 @@ plot.amdp(amdpobj, xtest_margin = 0, plot_margin = 0.05, pct_to_plot = 1,
 	If \code{TRUE} the x-axis is transformed to quantiles.  This is useful because (a) it emphasizes regions
 	of the marginal x empirical distribution of high mass and (b) tree-based methods are functions of x quantiles rather
 	than the actual x anyway.
+}
+\item{plot_pdp}{
+If TRUE, plot the partial dependence plot in black with extra thickness in addition to all the individual lines.
+Note that if \code{amdpobj} was built with \code{frac_to_build} less than 1, the line plotted is not the "true"
+pdp because the averaging is done only over those observations sampled to build \code{amdpobj}.
 }
   \item{\dots}{
 	Additional arguments.
