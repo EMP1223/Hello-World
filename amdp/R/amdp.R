@@ -5,6 +5,10 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 		stop("AMDP does not support factor attributes")
 	}
 	
+	if(!is.numeric(frac_to_build) || frac_to_build > 1 || frac_to_build<0 ){
+		stop("frac_to_build must be in (0,1]")
+	}
+
 	#warning
 	if(plot_logit){
 		warning("logit only defined for binary classification")
@@ -13,7 +17,7 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	######## (1) check inputs
 	# (a) check for valid prediction routine...
 	if(!missing(predictfcn)){
-		fcn_args = names(formals(predictfn))
+		fcn_args = names(formals(predictfcn))
 		if(!("object" %in% fcn_args && "newdata" %in% fcn_args)){
 			stop("predictfcn must have 'object' and 'newdata' arguments")
 		}
@@ -55,6 +59,7 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 		nskip = round( (1 / frac_to_build) )
 		X = X[seq(1, N, by = nskip), ]
 		xj = X[, j]
+		grid_pts = sort(xj)
 	}
 	
 	# generate partials
@@ -63,8 +68,16 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	}else{
 		actual_prediction = predictfcn(object = object, newdata = X)
 	}
-	if(plot_logit){
-		actual_prediction = log(actual_prediction) - (1/2)*(log(actual_prediction)+log(1 - actual_prediction)) 
+	if(plot_logit){	
+		min_pred = min(actual_prediction)
+		if(min_pred < 0){ stop("plot_logit is TRUE but predict returns negative values (these should be probabilities!)")}
+		if(min_pred == 0){
+			second_lowest = min(actual_prediction[actual_prediction>0])
+			if(is.na(second_lowest)){ second_lowest = .0001}
+			actual_prediction[(actual_prediction == 0)] = (.5 * second_lowest)
+		}
+		actual_prediction = log(actual_prediction) - (1/2)*(log(actual_prediction)+log(1 - actual_prediction))
+		 
 	}
 	
 	apdps = matrix(NA, nrow=nrow(X), ncol=length(grid_pts))
@@ -82,6 +95,21 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 		
 		if(verbose){cat(".")}			
 	}
+
+	#do logit if necessary
+	if(plot_logit){
+		#prevent log(0) error
+		min_val = min(apdps)
+		if(min_val < 0){
+			stop("plot_logit is TRUE but predict returns negative values (these should be probabilities!)")
+		} 
+		if(min_val == 0){
+			second_lowest = min(apdps[apdps>0])
+			if(is.na(second_lowest)){ second_lowest = .0001 } #arbitrary epsilon value}
+			apdps[(apdps==0)] = (.5 * second_lowest)          #arbitrarily, halfway between 0 and second_lowest
+		}
+		apdps = log(apdps) - (1/2)*(log(apdps)+log(1 - apdps)) 
+	}
 	if(verbose){cat("\n")}
 	
 	if(!is.null(colnames(X))){
@@ -89,6 +117,9 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	}else{
 		predictor = j
 	}
+
+	#Compute actual pdp. Note that this is averaged over the observations
+	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
 	obj_to_return = list(apdps=apdps, gridpts = grid_pts, predictor = predictor, xj = xj,
 						 actual_prediction = actual_prediction)
 	class(obj_to_return) = "amdp"
