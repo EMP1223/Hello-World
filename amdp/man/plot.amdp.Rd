@@ -8,7 +8,7 @@ Plots an amdp object.
 Plots an amdp object.
 }
 \usage{
-plot.amdp(amdpobj, xtest_margin = 0, plot_margin = 0.05, pct_to_plot = 1, 
+plot.amdp(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot = 1, 
 		 plot_orig_pts = TRUE, colorvec, x_quantile = FALSE, plot_pdp = FALSE, ...)
 }
 \arguments{
@@ -21,7 +21,7 @@ plot.amdp(amdpobj, xtest_margin = 0, plot_margin = 0.05, pct_to_plot = 1,
   \item{plot_margin}{
 	Additional margin to add to vertical axis.
 }
-  \item{pct_to_plot}{
+  \item{frac_to_plot}{
 	A number in (0,1] expressing the fraction of all curves to plot. Useful for un-cluttering plots with many observations.
 }
   \item{plot_orig_pts}{
