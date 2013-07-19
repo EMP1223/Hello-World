@@ -7,7 +7,7 @@ Create amdps
 Create amdps
 }
 \usage{
-amdp(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, ...)
+amdp(object, X, j, predictfcn, frac_to_build = 1, verbose = TRUE, plot = FALSE, plot_logit = F, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,7 +27,11 @@ Optional predict function to use with \code{object}. Must accept arguments \code
 software does minimal further checking -- it is up to the user to ensure that \code{predictfcn(object = object, newdata = X)}
 does something sensible. If not passed, the function looks for the default \code{predict} function associated with \code{class(object)}.
 }
-  \item{verbose}{
+\item{frac_to_build}{
+Fraction of the observations to build the curves for. If less than 1, the observations are chosen
+to be equally distributed throughout the quantiles of xj.
+}
+\item{verbose}{
 	If \code{verbose} is \code{TRUE} we print updates.
 }
   \item{plot}{
@@ -35,6 +39,10 @@ does something sensible. If not passed, the function looks for the default \code
 }
   \item{\dots}{
 	Other parameters to be passed.
+}
+\item{plot_logit}{
+If True, the predicted values (which should be probabilities), are converted to logits
+before the object is returned. 
 }
 }
 \value{If assigned, returns an object of class \code{amdp}. The object is a list with elements:\cr
