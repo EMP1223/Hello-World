@@ -7,7 +7,8 @@ Create amdps
 Create amdps
 }
 \usage{
-amdp(object, X, j, predictfcn, frac_to_build = 1, verbose = TRUE, plot = FALSE, plot_logit = F, ...)
+amdp(object, X, j, predictfcn, frac_to_build = 1, verbose = TRUE, 
+		plot = FALSE, logodds = F, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -40,8 +41,8 @@ to be equally distributed throughout the quantiles of xj.
   \item{\dots}{
 	Other parameters to be passed.
 }
-\item{plot_logit}{
-If True, the predicted values (which should be probabilities), are converted to logits
+\item{logodds}{
+If TRUE, the predicted values (which should be probabilities), are converted to logits
 before the object is returned. 
 }
 }
@@ -70,9 +71,9 @@ pima_predict = function(object, newdata){
 }
 
 #get amdp object for the 'glucose' predictor, but converted to logit.
-pima_amdp = amdp(pima_rf, X = PimaIndiansDiabetes[,1:8], j = "glucose", predictfcn = pima_predict, plot_logit = T)
+pima_amdp = amdp(pima_rf, X = PimaIndiansDiabetes[,1:8], j = "glucose", predictfcn = pima_predict, logodds = T)
 
-#plot
-plot(pima_amdp, x_quantile = T)
+#plot only 10% of curves with quantiles, actual pdp, and original points. 
+plot(pima_amdp, x_quantile = T, plot_pdp = T, frac_to_plot = .1)
 }
 }
