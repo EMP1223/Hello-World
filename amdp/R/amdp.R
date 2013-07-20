@@ -1,4 +1,4 @@
-amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_build = 1, plot_logit = F, ...){
+amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_build = 1, logodds = F, ...){
 
 	#check for factor
 	if (class(X[, j]) == "factor" || class(X[, j]) == "character"){
@@ -10,7 +10,7 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	}
 
 	#warning
-	if(plot_logit){
+	if(logodds){
 		warning("logit only defined for binary classification")
 	}
 	
@@ -68,9 +68,9 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	}else{
 		actual_prediction = predictfcn(object = object, newdata = X)
 	}
-	if(plot_logit){	
+	if(logodds){	
 		min_pred = min(actual_prediction)
-		if(min_pred < 0){ stop("plot_logit is TRUE but predict returns negative values (these should be probabilities!)")}
+		if(min_pred < 0){ stop("logodds is TRUE but predict returns negative values (these should be probabilities!)")}
 		if(min_pred == 0){
 			second_lowest = min(actual_prediction[actual_prediction>0])
 			if(is.na(second_lowest)){ second_lowest = .0001}
@@ -97,11 +97,11 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	}
 
 	#do logit if necessary
-	if(plot_logit){
+	if(logodds){
 		#prevent log(0) error
 		min_val = min(apdps)
 		if(min_val < 0){
-			stop("plot_logit is TRUE but predict returns negative values (these should be probabilities!)")
+			stop("logodds is TRUE but predict returns negative values (these should be probabilities!)")
 		} 
 		if(min_val == 0){
 			second_lowest = min(apdps[apdps>0])
@@ -121,7 +121,7 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	#Compute actual pdp. Note that this is averaged over the observations
 	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
 	obj_to_return = list(apdps=apdps, gridpts = grid_pts, predictor = predictor, xj = xj,
-						 actual_prediction = actual_prediction)
+						 actual_prediction = actual_prediction, logodds = logodds)
 	class(obj_to_return) = "amdp"
 	
 	if(plot){	#call plot function of our definition.
