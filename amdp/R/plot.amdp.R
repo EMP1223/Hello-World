@@ -46,7 +46,12 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot
 	}
 
 	#plot all the prediction lines
-	plot(grid, apdps[1, ], type = "n", ylim = c(min_apdps, max_apdps), xlab = xlab, ylab = expression(hat(y)))
+	if(amdpobj$logodds){
+		ylab = "partial log-odds"
+	}else{
+		ylab = paste("partial",expression(hat(y)), sep=" ")
+	}
+	plot(grid, apdps[1, ], type = "n", ylim = c(min_apdps, max_apdps), xlab = xlab, ylab = ylab)
 
 	for( i in 1 : nrow(apdps) ){
 		points(grid, apdps[i, ], col = colorvec[i], type = "l")
