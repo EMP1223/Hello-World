@@ -1,44 +1,39 @@
-amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_build = 1, logodds = F, ...){
+amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_build = 1, indices_to_build = NULL, logodds = F, ...){
 
 	#check for factor
 	if (class(X[, j]) == "factor" || class(X[, j]) == "character"){
 		stop("AMDP does not support factor attributes")
 	}
 	
-	if(!is.numeric(frac_to_build) || frac_to_build > 1 || frac_to_build<0 ){
+	if(!is.numeric(frac_to_build) || frac_to_build > 1 || frac_to_build < 0 ){
 		stop("frac_to_build must be in (0,1]")
 	}
 
-	#warning
-	if(logodds){
-		warning("logit only defined for binary classification")
-	}
+
 	
 	######## (1) check inputs
 	# (a) check for valid prediction routine...
-	if(!missing(predictfcn)){
+	if (!missing(predictfcn)){
 		fcn_args = names(formals(predictfcn))
-		if(!("object" %in% fcn_args && "newdata" %in% fcn_args)){
+		if (!("object" %in% fcn_args && "newdata" %in% fcn_args)){
 			stop("predictfcn must have 'object' and 'newdata' arguments")
-		}
-		else{
+		} else {
 			use_generic = FALSE
 		}
-	}else{ 
+	} else { 
 		#check for default prediction associated with class(object)
 		#this is harder than it should be because some classes have class(object)
 		#return a vector (randomForest, for instance).
 		classvec = class(object)
 		found_predict = 0; i = 0
-		while(!found_predict && i <= length(classvec)){
+		while (!found_predict && i <= length(classvec)){
 			fcns = methods(class=classvec[i])
 			found_predict = found_predict + length(grep("predict", fcns))
 			i = i+1
 		}
-		if(found_predict == 0){
+		if (found_predict == 0){
 			stop("No generic predict method found this object.")
-		}
-		else{
+		} else {
 			use_generic = TRUE
 		}
 	}
@@ -48,39 +43,54 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	# grid points
 	#now create xj-to-predict values
 	xj = X[, j]  #fix so predictor can be given as a name. 
-	grid_pts = sort(X[,j])
+	grid_pts = sort(X[, j])
 	
 	# check fraction to build
-	if(frac_to_build < 1){
+	if (frac_to_build < 1){
 		# we don't sample randomly -- we ensure uniform sampling across
 		# quantiles of xj so as to not leave out portions of the dist'n of x.
 		order_xj = order(xj)
 		X = X[order_xj, ]  #ordered by column xj 	
-		nskip = round( (1 / frac_to_build) )
+		nskip = round(1 / frac_to_build)
 		X = X[seq(1, N, by = nskip), ]
 		xj = X[, j]
 		grid_pts = sort(xj)
+	} else if (!missing(indices_to_build)){
+		if (frac_to_build < 1){
+			stop("\"frac_to_build\" and \"indices_to_build\" cannot both be specified simultaneously")
+		}
+		X = X[indices_to_build, ]
+		xj = X[, j]
+		grid_pts = sort(xj)		
 	}
 	
 	# generate partials
-	if(use_generic){
-		actual_prediction = predict(object, X)
-	}else{
-		actual_prediction = predictfcn(object = object, newdata = X)
+	if (use_generic){
+		actual_predictions = predict(object, X)
+	} else {
+		actual_predictions = predictfcn(object = object, newdata = X)
 	}
-	if(logodds){	
-		min_pred = min(actual_prediction)
-		if(min_pred < 0){ stop("logodds is TRUE but predict returns negative values (these should be probabilities!)")}
-		if(min_pred == 0){
-			second_lowest = min(actual_prediction[actual_prediction>0])
-			if(is.na(second_lowest)){ second_lowest = .0001}
-			actual_prediction[(actual_prediction == 0)] = (.5 * second_lowest)
+	if (logodds){	
+		min_pred = min(actual_predictions)
+		max_pred = max(actual_predictions)
+		#do some p_hat \in [0, 1] checking
+		if (min_pred < 0){ 
+			stop("the logodds option is on but predict returns values less than 0 (these should be probabilities!)")
+		} else if (max_pred > 1){
+			stop("the logodds option is on but predict returns values greater than 1 (these should be probabilities!)")
 		}
-		actual_prediction = log(actual_prediction) - (1/2)*(log(actual_prediction)+log(1 - actual_prediction))
+		if (min_pred == 0){
+			second_lowest = min(actual_predictions[actual_predictions>0])
+			if (is.na(second_lowest)){ 
+				second_lowest = .0001
+			}
+			actual_predictions[(actual_predictions == 0)] = .5 * second_lowest
+		}
+		actual_predictions = log(actual_predictions) - (1 / 2) * (log(actual_predictions) + log(1 - actual_predictions))
 		 
 	}
 	
-	apdps = matrix(NA, nrow=nrow(X), ncol=length(grid_pts))
+	apdps = matrix(NA, nrow = nrow(X), ncol = length(grid_pts))
 	colnames(apdps) = grid_pts
 	#pred_test_values = seq(from = min_xj_seq, to = max_xj_seq, by = (max_xj_seq - min_xj_seq) / (num_grid_pts - 1))
 	
@@ -90,41 +100,43 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 			apdps[, t] = predict(object, X, ...)
 		}
 		else{
-			apdps[, t] = predictfcn(object=object, newdata=X)
+			apdps[, t] = predictfcn(object = object, newdata = X)
 		}
 		
 		if(verbose){cat(".")}			
 	}
 
 	#do logit if necessary
-	if(logodds){
+	if (logodds){
 		#prevent log(0) error
 		min_val = min(apdps)
-		if(min_val < 0){
+		if (min_val < 0){
 			stop("logodds is TRUE but predict returns negative values (these should be probabilities!)")
 		} 
-		if(min_val == 0){
-			second_lowest = min(apdps[apdps>0])
-			if(is.na(second_lowest)){ second_lowest = .0001 } #arbitrary epsilon value}
-			apdps[(apdps==0)] = (.5 * second_lowest)          #arbitrarily, halfway between 0 and second_lowest
+		if (min_val == 0){
+			second_lowest = min(apdps[apdps > 0])
+			if (is.na(second_lowest)){ 
+				second_lowest = .0001 #arbitrary epsilon value
+			} 
+			apdps[(apdps == 0)] = (.5 * second_lowest) #arbitrarily, halfway between 0 and second_lowest
 		}
-		apdps = log(apdps) - (1/2)*(log(apdps)+log(1 - apdps)) 
+		apdps = log(apdps) - (1 / 2) * (log(apdps) + log(1 - apdps)) 
 	}
-	if(verbose){cat("\n")}
+	if (verbose){cat("\n")}
 	
-	if(!is.null(colnames(X))){
+	if (!is.null(colnames(X))){
 		predictor = colnames(X)[j]
-	}else{
+	} else {
 		predictor = j
 	}
 
 	#Compute actual pdp. Note that this is averaged over the observations
 	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
 	obj_to_return = list(apdps=apdps, gridpts = grid_pts, predictor = predictor, xj = xj,
-						 actual_prediction = actual_prediction, logodds = logodds)
+						 actual_prediction = actual_predictions, logodds = logodds)
 	class(obj_to_return) = "amdp"
 	
-	if(plot){	#call plot function of our definition.
+	if (plot){	#call plot function of our definition.
 		cat("plotting goes here \n")
 	}
 	

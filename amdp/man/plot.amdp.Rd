@@ -62,7 +62,7 @@ pima_predict = function(object, newdata){
 }
 
 #get amdp object for the 'glucose' predictor, but converted to logit.
-pima_amdp = amdp(pima_rf, X = PimaIndiansDiabetes[,1:8], j = "glucose", predictfcn = pima_predict, plot_logit = T)
+pima_amdp = amdp(pima_rf, X = PimaIndiansDiabetes[, 1 : 8], j = "glucose", predictfcn = pima_predict, plot_logit = T, frac_to_build = 0.25)
 
 #plot only 10% of curves with quantiles, actual pdp, and original points. 
 plot(pima_amdp, x_quantile = T, plot_pdp = T, frac_to_plot = .1)
