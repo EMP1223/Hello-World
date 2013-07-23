@@ -28,7 +28,7 @@ plot.amdp(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot = 1,
 	If \code{TRUE} plots a dot on each curve for that observation's prediction at it's actual x value.
 }
   \item{colorvec}{
-	Optional vector of colors to use for the curves. If not passed it is generated randomly.
+	Optional vector of colors to use for the curves. If not passed it, colors are randomly drawn from RGB space.
 }
   \item{x_quantile}{
 	If \code{TRUE} the x-axis is transformed to quantiles.  This is useful because (a) it emphasizes regions

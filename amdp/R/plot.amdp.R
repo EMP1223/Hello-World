@@ -46,7 +46,7 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot
 	min_apdps = min_apdps - plot_margin * range_apdps
 	max_apdps = max_apdps + plot_margin * range_apdps
 	if (class(amdpobj$predictor) != "character"){
-		xlab = paste("x",amdpobj$predictor,sep="")  #x1, x2 etc.
+		xlab = paste("x", amdpobj$predictor, sep="")  #x1, x2 etc.
 	} else {
 		xlab = amdpobj$predictor					#the actual name of the feature.
 	}
@@ -73,8 +73,6 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot
 		
 		#calculate the line thickness based on how many lines there are
 		num_lines = length(plot_points_indices)
-		cat("num_lines:", num_lines, "\n")
-		if (num_lines < 50){}
 		points(grid, friedman_pdp, col = "yellow", type = "l", lwd = min(5.5 + (num_lines / 100) * 0.75, 8)) #every 100 lines we get 0.5 more highlight up to 8
 		points(grid, friedman_pdp, col = "BLACK", type = "l", lwd = 4)
 	}
