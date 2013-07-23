@@ -1,5 +1,5 @@
 plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot = 1, plot_orig_pts = TRUE,
-					colorvec, x_quantile = FALSE, plot_pdp = FALSE, ...){
+					colorvec, x_quantile = FALSE, plot_pdp = FALSE, centered = FALSE, centered_percentile = 0.05, ...){
 
 	#some argument checking
 	if (class(amdpobj) != "amdp"){ 
@@ -33,6 +33,9 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot
 	apdps = apdps[plot_points_indices, ]
 	if (nrow(apdps) == 0){
 		stop("no rows selected: frac_to_plot too small.")
+	}
+	if (centered){
+		apdps = apdps - apdps[, ceiling(ncol(apdps) * centered_percentile + 0.00001)]
 	}
 	colorvec = colorvec[plot_points_indices]
 	
@@ -78,7 +81,10 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot
 
 	if (plot_orig_pts){ #indicate the fitted values associated with observed xj values
 		yhat_actual = amdpobj$actual_prediction[plot_points_indices]
-		
+		if (centered){
+#			yhat_actual = yhat_actual - apdps[, ceiling(ncol(apdps) * centered_percentile + 0.00001)]
+		}
+				
 		if (x_quantile){
 			xj = ecdf_fcn(amdpobj$xj)[plot_points_indices]
 		} else {
@@ -86,11 +92,6 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot
 		}
 		points(xj, yhat_actual, col = "black", pch = 16, cex = 1.5)
 		points(xj, yhat_actual, col = colorvec, pch = 16)
-#		xj = amdpobj$xj[plot_points_indices]
-#		for (pt in plot_points_indices){
-#			points(xj[pt], yhat_actual[pt], col = "black", pch = 16, cex = 1.5)
-#			points(xj[pt], yhat_actual[pt], col = colorvec[pt], pch = 16)			
-#		}
 
 	}
 }

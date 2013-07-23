@@ -62,9 +62,22 @@ pima_predict = function(object, newdata){
 }
 
 #get amdp object for the 'glucose' predictor, but converted to logit.
-pima_amdp = amdp(pima_rf, X = PimaIndiansDiabetes[, 1 : 8], j = "glucose", predictfcn = pima_predict, plot_logit = T, frac_to_build = 0.25)
+pima_amdp = amdp(pima_rf, X = PimaIndiansDiabetes[, 1 : 8], j = "glucose", predictfcn = pima_predict, frac_to_build = 0.25, logodds = TRUE)
 
 #plot only 10% of curves with quantiles, actual pdp, and original points. 
+plot(pima_amdp, x_quantile = T, plot_pdp = T, frac_to_plot = .5)
+plot(pima_amdp, x_quantile = T, plot_pdp = T, frac_to_plot = .5, centered = TRUE)
+
+pima_amdp = amdp(pima_rf, X = PimaIndiansDiabetes[, 1 : 8], j = "age", predictfcn = pima_predict, frac_to_build = 0.25, logodds = TRUE)
+
+set.seed(1984)
 plot(pima_amdp, x_quantile = T, plot_pdp = T, frac_to_plot = .1)
+set.seed(1984)
+plot(pima_amdp, x_quantile = T, plot_pdp = F, frac_to_plot = .008, centered = TRUE, centered_percentile = 0.02)
+abline(a = 0, b = 0, lwd = 5, col = "red")
+
+cluster_pdps(pima_amdp, centers = 2)
+
+###also regression??
 }
 }
