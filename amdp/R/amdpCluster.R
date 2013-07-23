@@ -1,5 +1,5 @@
-amdpCluster = function(apdp_obj, plot = TRUE, plot_margin = 0.05, colorvec, x_quantile = FALSE, nClusters,
-					   avg_lwd = 3, plot_pdp=FALSE, ...){
+amdpCluster = function(apdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, colorvec, plot_pdp=FALSE,
+			x_quantile = FALSE, avg_lwd = 3, ...){
 		
 	if(missing(nClusters) || !(nClusters %% 1 == 0 ) || (nClusters<=0)){
 		stop("nClusters must be a positive integer.")
