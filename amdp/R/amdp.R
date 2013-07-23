@@ -124,15 +124,15 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	}
 	if (verbose){cat("\n")}
 	
-	if (!is.null(colnames(X))){
-		predictor = colnames(X)[j]
-	} else {
-		predictor = j
-	}
+#	if (!is.null(colnames(X))){
+#		predictor = colnames(X)[j]
+#	} else {
+#		predictor = j
+#	}
 
 	#Compute actual pdp. Note that this is averaged over the observations
 	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
-	obj_to_return = list(apdps=apdps, gridpts = grid_pts, predictor = predictor, xj = xj,
+	obj_to_return = list(apdps=apdps, gridpts = grid_pts, predictor = j, xj = xj,
 						 actual_prediction = actual_predictions, logodds = logodds)
 	class(obj_to_return) = "amdp"
 	
