@@ -8,7 +8,7 @@ Does clustering of an amdp object, plots it.
 Uses kmeans to do clustering on the rows of an amdp object and makes a plot.
 }
 \usage{
-plot.amdp(apdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, colorvec, plot_pdp=FALSE,
+amdpCluster(apdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, colorvec, plot_pdp=FALSE,
 			x_quantile = FALSE, avg_lwd = 3, ...)
 }
 \arguments{
