@@ -4,4 +4,3 @@ S3method(plot, amdp)
 
 S3method(print, amdp)
 S3method(summary, amdp)
-#S3method(cluster, amdp) ### doesn't work for some reason??
