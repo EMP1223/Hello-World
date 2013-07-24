@@ -1,4 +1,4 @@
-amdp = function(object, X, predictor, predictfcn, verbose = TRUE, plot = FALSE, frac_to_build = 1, indices_to_build = NULL, logodds = F, ...){
+amdp = function(object, X, predictor, predictfcn, newdata, verbose = TRUE, plot = FALSE, frac_to_build = 1, indices_to_build = NULL, logodds = F, ...){
 
 	#check for factor
 	if (class(X[, predictor]) == "factor" || class(X[, predictor]) == "character"){
@@ -96,7 +96,7 @@ amdp = function(object, X, predictor, predictfcn, verbose = TRUE, plot = FALSE, 
 	
 	for (t in 1 : length(grid_pts) ){
 		X[, predictor] = grid_pts[t]
-		if(use_generic){
+		if (use_generic){
 			apdps[, t] = predict(object, X, ...)
 		}
 		else{
@@ -133,7 +133,8 @@ amdp = function(object, X, predictor, predictfcn, verbose = TRUE, plot = FALSE, 
 
 	#Compute actual pdp. Note that this is averaged over the observations
 	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
-	amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, logodds = logodds, xlab = xlab)
+	amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, 
+			logodds = logodds, xlab = xlab, N = N)
 	class(amdp_obj) = "amdp"
 	
 	if (plot){	#if the user wants to use a default plotting, they can get the plot in one line

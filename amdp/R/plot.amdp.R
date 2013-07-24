@@ -1,5 +1,6 @@
 plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_pts_preds = TRUE,
-					colorvec, x_quantile = FALSE, plot_pdp = FALSE, centered = FALSE, centered_percentile = 0.05, ...){
+					colorvec, x_quantile = FALSE, plot_pdp = FALSE, plot_new_data = FALSE, 
+					centered = FALSE, centered_percentile = 0.05, ...){
 
 	#some argument checking
 	if (class(amdp_obj) != "amdp"){ 
