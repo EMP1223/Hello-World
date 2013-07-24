@@ -21,8 +21,8 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 	N = nrow(apdps)
 
 	if (missing(colorvec)){
-		colorvec = rgb(runif(N, 0, 0.7), runif(N, 0, 0.7), runif(N, 0, 0.7))
-	} else{
+		colorvec = sort(rgb(runif(N, 0, 0.7), runif(N, 0, 0.7), runif(N, 0, 0.7)))
+	} else {
 		if (length(colorvec) < N){
 			stop("color vector has length ", length(colorvec), " but there are ", N, " lines to plot")
 		}
@@ -77,7 +77,8 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 	if (plot_orig_pts_preds){ #indicate the fitted values associated with observed xj values
 		yhat_actual = amdp_obj$actual_prediction[plot_points_indices]
 		if (centered){
-#			yhat_actual = yhat_actual - apdps[, ceiling(ncol(apdps) * centered_percentile + 0.00001)]
+			#TO-DO
+			yhat_actual = yhat_actual - apdps[, ceiling(ncol(apdps) * centered_percentile + 0.00001)]
 		}
 				
 		if (x_quantile){
@@ -89,5 +90,7 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 		points(xj, yhat_actual, col = colorvec, pch = 16)
 
 	}
+	
+	invisible(list(plot_points_indices = plot_points_indices))
 }
 
