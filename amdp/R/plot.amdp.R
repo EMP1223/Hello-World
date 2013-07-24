@@ -1,8 +1,8 @@
-plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot = 1, plot_orig_pts = TRUE,
+plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_pts_preds = TRUE,
 					colorvec, x_quantile = FALSE, plot_pdp = FALSE, centered = FALSE, centered_percentile = 0.05, ...){
 
 	#some argument checking
-	if (class(amdpobj) != "amdp"){ 
+	if (class(amdp_obj) != "amdp"){ 
 		stop("object is not of class 'amdp'")
 	}
 	if (frac_to_plot <= 0 || frac_to_plot > 1 ){
@@ -10,14 +10,14 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot
 	}
 
 	#extract the grid and lines to plot	
-	grid = amdpobj$gridpts 
+	grid = amdp_obj$gridpts 
 	n_grid = length(grid)
 	ecdf_fcn = NULL
 	if (x_quantile){
 		ecdf_fcn = ecdf(grid)
 		grid = ecdf_fcn(grid)
 	}
-	apdps = amdpobj$apdps
+	apdps = amdp_obj$apdps
 	N = nrow(apdps)
 
 	if (missing(colorvec)){
@@ -45,17 +45,14 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot
 	range_apdps = max_apdps - min_apdps
 	min_apdps = min_apdps - plot_margin * range_apdps
 	max_apdps = max_apdps + plot_margin * range_apdps
-	if (class(amdpobj$predictor) != "character"){
-		xlab = paste("x", amdpobj$predictor, sep="")  #x1, x2 etc.
-	} else {
-		xlab = amdpobj$predictor					#the actual name of the feature.
-	}
-	if(x_quantile){
+
+	xlab = amdp_obj$xlab
+	if (x_quantile){
 		xlab = paste("quantile(", xlab, ")", sep = "")
 	}
 
 	#plot all the prediction lines
-	if (amdpobj$logodds){
+	if (amdp_obj$logodds){
 		ylab = "partial log-odds"
 	} else {
 		ylab = paste("partial yhat")
@@ -77,16 +74,16 @@ plot.amdp = function(amdpobj, xtest_margin = 0, plot_margin = 0.05, frac_to_plot
 		points(grid, friedman_pdp, col = "BLACK", type = "l", lwd = 4)
 	}
 
-	if (plot_orig_pts){ #indicate the fitted values associated with observed xj values
-		yhat_actual = amdpobj$actual_prediction[plot_points_indices]
+	if (plot_orig_pts_preds){ #indicate the fitted values associated with observed xj values
+		yhat_actual = amdp_obj$actual_prediction[plot_points_indices]
 		if (centered){
 #			yhat_actual = yhat_actual - apdps[, ceiling(ncol(apdps) * centered_percentile + 0.00001)]
 		}
 				
 		if (x_quantile){
-			xj = ecdf_fcn(amdpobj$xj)[plot_points_indices]
+			xj = ecdf_fcn(amdp_obj$xj)[plot_points_indices]
 		} else {
-			xj = amdpobj$xj[plot_points_indices]
+			xj = amdp_obj$xj[plot_points_indices]
 		}
 		points(xj, yhat_actual, col = "black", pch = 16, cex = 1.5)
 		points(xj, yhat_actual, col = colorvec, pch = 16)

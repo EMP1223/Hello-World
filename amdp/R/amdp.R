@@ -1,12 +1,12 @@
-amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_build = 1, indices_to_build = NULL, logodds = F, ...){
+amdp = function(object, X, predictor, predictfcn, verbose = TRUE, plot = FALSE, frac_to_build = 1, indices_to_build = NULL, logodds = F, ...){
 
 	#check for factor
-	if (class(X[, j]) == "factor" || class(X[, j]) == "character"){
+	if (class(X[, predictor]) == "factor" || class(X[, predictor]) == "character"){
 		stop("AMDP does not support factor attributes")
 	}
 	
 	if(!is.numeric(frac_to_build) || frac_to_build > 1 || frac_to_build < 0 ){
-		stop("frac_to_build must be in (0,1]")
+		stop("frac_to_build must be in (0, 1]")
 	}
 
 
@@ -42,8 +42,8 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	N = nrow(X)
 	# grid points
 	#now create xj-to-predict values
-	xj = X[, j]  #fix so predictor can be given as a name. 
-	grid_pts = sort(X[, j])
+	xj = X[, predictor]  #fix so predictor can be given as a name. 
+	grid_pts = sort(X[, predictor])
 	
 	# check fraction to build
 	if (frac_to_build < 1){
@@ -53,14 +53,14 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 		X = X[order_xj, ]  #ordered by column xj 	
 		nskip = round(1 / frac_to_build)
 		X = X[seq(1, N, by = nskip), ]
-		xj = X[, j]
+		xj = X[, predictor]
 		grid_pts = sort(xj)
 	} else if (!missing(indices_to_build)){
 		if (frac_to_build < 1){
 			stop("\"frac_to_build\" and \"indices_to_build\" cannot both be specified simultaneously")
 		}
 		X = X[indices_to_build, ]
-		xj = X[, j]
+		xj = X[, predictor]
 		grid_pts = sort(xj)		
 	}
 	
@@ -95,7 +95,7 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	#pred_test_values = seq(from = min_xj_seq, to = max_xj_seq, by = (max_xj_seq - min_xj_seq) / (num_grid_pts - 1))
 	
 	for (t in 1 : length(grid_pts) ){
-		X[, j] = grid_pts[t]
+		X[, predictor] = grid_pts[t]
 		if(use_generic){
 			apdps[, t] = predict(object, X, ...)
 		}
@@ -124,21 +124,21 @@ amdp = function(object, X, j, predictfcn, verbose = TRUE, plot = FALSE, frac_to_
 	}
 	if (verbose){cat("\n")}
 	
-#	if (!is.null(colnames(X))){
-#		predictor = colnames(X)[j]
-#	} else {
-#		predictor = j
-#	}
+	if (class(predictor) != "character"){
+		xlab = paste("x", predictor, sep = "_")  #x_1, x_2 etc.
+	} else {
+		xlab = predictor #the actual name of the feature.
+	}
+
 
 	#Compute actual pdp. Note that this is averaged over the observations
 	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
-	obj_to_return = list(apdps=apdps, gridpts = grid_pts, predictor = j, xj = xj,
-						 actual_prediction = actual_predictions, logodds = logodds)
-	class(obj_to_return) = "amdp"
+	amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, logodds = logodds, xlab = xlab)
+	class(amdp_obj) = "amdp"
 	
-	if (plot){	#call plot function of our definition.
-		cat("plotting goes here \n")
+	if (plot){	#if the user wants to use a default plotting, they can get the plot in one line
+		plot(amdp_obj)
 	}
 	
-	invisible(obj_to_return)
+	invisible(amdp_obj)
 }

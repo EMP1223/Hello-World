@@ -1,3 +1,3 @@
-print.amdp = function(amdp_obj){
-	summary(amdp_obj)
+summary.amdp = function(amdp_obj){
+	print(amdp_obj)
 }
