@@ -1,4 +1,8 @@
-amdp = function(object, X, predictor, predictfcn, newdata, verbose = TRUE, plot = FALSE, frac_to_build = 1, indices_to_build = NULL, logodds = F, ...){
+amdp = function(object, X, 
+		predictor, predictfcn, newdata, 
+		verbose = TRUE, plot = FALSE, 
+		frac_to_build = 1, indices_to_build = NULL, 
+		num_grid_pts, logodds = F, ...){
 
 	#check for factor
 	if (class(X[, predictor]) == "factor" || class(X[, predictor]) == "character"){
@@ -62,6 +66,11 @@ amdp = function(object, X, predictor, predictfcn, newdata, verbose = TRUE, plot 
 		X = X[indices_to_build, ]
 		xj = X[, predictor]
 		grid_pts = sort(xj)		
+	}
+	
+	#now handle less grid pts
+	if (!missing(num_grid_pts)){
+		grid_pts = grid_pts[round(seq(from = 1, to = length(grid_pts), length.out = num_grid_pts))]
 	}
 	
 	# generate partials

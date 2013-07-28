@@ -9,7 +9,7 @@ X = Boston
 y = X$medv
 X$medv = NULL
 
-dtree_mod_lstat = dynaTrees(X, y, rprop = "luall", model = "linear", R = 10)
+dtree_mod_lstat = dynaTree(X, y, model = "linear") #rprop = "luall", 
 
 amdp_obj_dt = amdp(dtree_mod_lstat, X, predictor = "lstat", frac_to_build = 1, predictfcn = function(object, newdata){predict(object, newdata)$mean})
 

@@ -1,6 +1,7 @@
 library(randomForest)
 library(missForest)
 library(MASS)
+library(amdp)
 
 
 ###########GRID COMPUTING
@@ -14,14 +15,14 @@ if (NOT_ON_GRID){
 }
 setwd(directory_where_code_is)
 
-source("r_scripts/bart_package_inits.R")
-source("r_scripts/bart_package_builders.R")
-source("r_scripts/bart_package_predicts.R")
-source("r_scripts/bart_package_data_preprocessing.R")
-source("r_scripts/bart_package_plots.R")
-source("r_scripts/bart_package_variable_selection.R")
-source("r_scripts/bart_package_f_tests.R")
-source("r_scripts/bart_package_summaries.R")
+source("bartMachine/R/bart_package_inits.R")
+source("bartMachine/R/bart_package_builders.R")
+source("bartMachine/R/bart_package_predicts.R")
+source("bartMachine/R/bart_package_data_preprocessing.R")
+source("bartMachine/R/bart_package_plots.R")
+source("bartMachine/R/bart_package_variable_selection.R")
+source("bartMachine/R/bart_package_f_tests.R")
+source("bartMachine/R/bart_package_summaries.R")
 
 #get the Boston housing data
 data(Boston)
@@ -31,7 +32,20 @@ y = X$medv
 X$medv = NULL
 
 bart_machine = build_bart_machine(X, y)
-amdp(bart_machine, X, "lstat")
+
+#create amdp's for all features in the boston housing data
+amdb_bart_objs = list()
+for (j in colnames(X)){
+	amdb_bart_objs[[j]] = amdp(bart_machine, X, j, num_grid_pts = 100)
+}
+
+for (j in colnames(X)){
+	windows()
+	par(mfrow = c(1, 3))
+	plot(amdb_bart_objs[["lstat"]], frac_to_plot = 0.1)
+	plot(amdb_bart_objs[["lstat"]], frac_to_plot = 0.5, centered = 0.02)
+	cluster_amdp(amdb_bart_objs[["lstat"]], nClusters = 2)
+}
 
 
 lm_mod = lm(medv ~ ., Boston)
