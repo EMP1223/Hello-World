@@ -43,7 +43,7 @@ pdp because the averaging is done only over those observations sampled to build 
   \item{plot_orig_pts}{
 	If \code{TRUE} plots a dot on each curve for that observation's prediction at it's actual x value.
 }
-  \item{\rug}{
+  \item{rug}{
 	Draw rugged lines on the x-axis representing the distribution of \code{X[, j]}.
 }
   \item{\dots}{

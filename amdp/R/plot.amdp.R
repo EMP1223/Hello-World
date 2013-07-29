@@ -36,7 +36,8 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 		stop("no rows selected: frac_to_plot too small.")
 	}
 	if (centered){
-		apdps = apdps - apdps[, ceiling(ncol(apdps) * centered_percentile + 0.00001)]
+		centering_vector = apdps[, ceiling(ncol(apdps) * centered_percentile + 0.00001)]
+		apdps = apdps - centering_vector
 	}
 	colorvec = colorvec[plot_points_indices]
 	
@@ -58,7 +59,7 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 	if (amdp_obj$logodds){
 		ylab = "partial log-odds"
 	} else {
-		ylab = paste("partial yhat")
+		ylab = paste("partial yhat", ifelse(centered, "(centered)", ""))
 	}
 	plot(grid, apdps[1, ], 
 			type = "n", 
@@ -95,8 +96,7 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 	if (plot_orig_pts_preds){ #indicate the fitted values associated with observed xj values
 		yhat_actual = amdp_obj$actual_prediction[plot_points_indices]
 		if (centered){
-			#TO-DO
-			yhat_actual = yhat_actual - apdps[, ceiling(ncol(apdps) * centered_percentile + 0.00001)]
+			yhat_actual = yhat_actual - centering_vector
 		}
 				
 		if (x_quantile){
