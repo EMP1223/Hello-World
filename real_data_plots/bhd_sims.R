@@ -42,9 +42,9 @@ for (j in colnames(X)){
 for (j in colnames(X)){
 	windows()
 	par(mfrow = c(1, 3))
-	plot(amdb_bart_objs[["lstat"]], frac_to_plot = 0.1)
-	plot(amdb_bart_objs[["lstat"]], frac_to_plot = 0.5, centered = 0.02)
-	cluster_amdp(amdb_bart_objs[["lstat"]], nClusters = 2)
+	plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
+	plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02)
+	cluster_amdp(amdb_bart_objs[[j]], nClusters = 2)
 }
 
 

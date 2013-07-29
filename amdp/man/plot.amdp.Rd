@@ -40,8 +40,14 @@ If TRUE, plot the partial dependence plot in black with extra thickness in addit
 Note that if \code{amdpobj} was built with \code{frac_to_build} less than 1, the line plotted is not the "true"
 pdp because the averaging is done only over those observations sampled to build \code{amdpobj}.
 }
+  \item{plot_orig_pts}{
+	If \code{TRUE} plots a dot on each curve for that observation's prediction at it's actual x value.
+}
+  \item{\rug}{
+	Draw rugged lines on the x-axis representing the distribution of \code{X[, j]}.
+}
   \item{\dots}{
-	Additional arguments.
+	Additional arguments passed to plot.
 }
 }
 \examples{

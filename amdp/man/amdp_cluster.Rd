@@ -1,5 +1,5 @@
-\name{amdpCluster}
-\alias{amdpCluster}
+\name{amdp_cluster}
+\alias{amdp_cluster}
 \title{
 Does clustering of an amdp object, plots it.
 }

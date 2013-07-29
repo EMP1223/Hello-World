@@ -41,6 +41,11 @@ to be equally distributed throughout the quantiles of xj.
   \item{\dots}{
 	Other parameters to be passed.
 }
+\item{num_grid_pts}{
+The number of points along \code{X[, j]} the program will predict at. If unspecified, it will predict at all unique points.
+If the number of unique points is less than the number of grid points specified, the program will warn the user and the number
+of unique points will be used.
+}
 \item{logodds}{
 If TRUE, the predicted values (which should be probabilities), are converted to logits
 before the object is returned. 
@@ -50,8 +55,18 @@ before the object is returned.
 \item{apdps}{An \code{nrow(X)} by \code{length(gridpts)} matrix where row i is observations i marginal dependence curve.}
 \item{gridpts}{A vector of the unique grid points at which all marginal curves are evaluated.}
 \item{predictor}{The predictor used. If possible, returns the predictor's name; if not, returns column index in \code{X}.}
-\item{xj}{The actual value of \code{X[,j]} for each observation.}
+\item{xj}{The actual value of \code{X[, j]} for each observation.}
 \item{actual_prediction}{The predicted value for each observation at it's actual vector of predictors.}
+\item{logodds}{The \code{logodds} specified by the user.}
+\item{xlab}{The x-axis label used for plotting}
+\item{nominal_axis}{Whether or not this variable is treated as a nominal variable for plotting purposes (if it has more than 5 unique values, it's not).}
+\item{N}{The number of rows in the inputted matrix or data frame}
+
+
+amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, 
+			logodds = logodds, xlab = xlab, num_unique_pts = num_unique_pts, N = N)
+			
+			
 }
 \examples{
 \dontrun{

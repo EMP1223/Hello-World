@@ -39,6 +39,9 @@ If TRUE, plot the partial dependence plot in black with extra thickness in addit
 Average line width of the curves corresponding to each cluster. The thickness is
 proportional to the number of observations in each cluster.
 }
+  \item{rug}{
+	Draw rugged lines on the x-axis representing the distribution of \code{X[, j]}.
+}
 \item{\dots}{
 	Additional arguments, for example arguments to the \code{kmeans} routine.
 }

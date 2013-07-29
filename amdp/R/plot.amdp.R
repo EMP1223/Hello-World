@@ -1,6 +1,6 @@
 plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_pts_preds = TRUE,
 					colorvec, x_quantile = FALSE, plot_pdp = FALSE, plot_new_data = FALSE, 
-					centered = FALSE, centered_percentile = 0.05, ...){
+					centered = FALSE, rug = TRUE, centered_percentile = 0.05, ...){
 
 	#some argument checking
 	if (class(amdp_obj) != "amdp"){ 
@@ -52,14 +52,31 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 		xlab = paste("quantile(", xlab, ")", sep = "")
 	}
 
+
+	
 	#plot all the prediction lines
 	if (amdp_obj$logodds){
 		ylab = "partial log-odds"
 	} else {
 		ylab = paste("partial yhat")
 	}
-	plot(grid, apdps[1, ], type = "n", ylim = c(min_apdps, max_apdps), xlab = xlab, ylab = ylab)
-
+	plot(grid, apdps[1, ], 
+			type = "n", 
+			ylim = c(min_apdps, max_apdps), 
+			xlab = xlab, 
+			ylab = ylab, 
+			xaxt = ifelse(amdp_obj$nominal_axis, "n", "s"), 
+			...)
+	
+	if (rug){
+		rug(amdp_obj$xj)	
+	}
+	
+	
+	if (amdp_obj$nominal_axis){
+		axis(1, at = sort(amdp_obj$xj), labels = sort(amdp_obj$xj))
+	}	
+	
 	for (i in 1 : nrow(apdps)){
 		points(grid, apdps[i, ], col = colorvec[i], type = "l")
 	}

@@ -1,3 +1,5 @@
+MAX_NUM_UNIQUE_PTS_NOMINAL = 5
+
 amdp = function(object, X, 
 		predictor, predictfcn, newdata, 
 		verbose = TRUE, plot = FALSE, 
@@ -68,9 +70,17 @@ amdp = function(object, X,
 		grid_pts = sort(xj)		
 	}
 	
+	grid_pts = unique(grid_pts)
+	num_unique_pts = length(grid_pts)
+	
+	
 	#now handle less grid pts
 	if (!missing(num_grid_pts)){
-		grid_pts = grid_pts[round(seq(from = 1, to = length(grid_pts), length.out = num_grid_pts))]
+		if (num_grid_pts > num_unique_pts){
+			warning(paste("the number of grid points specified,", num_grid_pts, "is larger than the number of unique values,", num_unique_pts, "(defaulting to number of unique values)"))	
+		} else {
+			grid_pts = grid_pts[round(seq(from = 1, to = num_unique_pts, length.out = num_grid_pts))]	
+		}		
 	}
 	
 	# generate partials
@@ -89,7 +99,7 @@ amdp = function(object, X,
 			stop("the logodds option is on but predict returns values greater than 1 (these should be probabilities!)")
 		}
 		if (min_pred == 0){
-			second_lowest = min(actual_predictions[actual_predictions>0])
+			second_lowest = min(actual_predictions[actual_predictions > 0])
 			if (is.na(second_lowest)){ 
 				second_lowest = .0001
 			}
@@ -138,12 +148,18 @@ amdp = function(object, X,
 	} else {
 		xlab = predictor #the actual name of the feature.
 	}
+	
+	if (num_unique_pts <= MAX_NUM_UNIQUE_PTS_NOMINAL){
+		nominal_axis = TRUE
+	} else {
+		nominal_axis = FALSE
+	}	
 
 
 	#Compute actual pdp. Note that this is averaged over the observations
 	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
 	amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, 
-			logodds = logodds, xlab = xlab, N = N)
+			logodds = logodds, xlab = xlab, nominal_axis = nominal_axis, N = N)
 	class(amdp_obj) = "amdp"
 	
 	if (plot){	#if the user wants to use a default plotting, they can get the plot in one line
