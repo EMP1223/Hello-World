@@ -15,8 +15,6 @@ amdp = function(object, X,
 		stop("frac_to_build must be in (0, 1]")
 	}
 
-
-	
 	######## (1) check inputs
 	# (a) check for valid prediction routine...
 	if (!missing(predictfcn)){
