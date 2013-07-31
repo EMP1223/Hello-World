@@ -7,7 +7,7 @@ Create amdps
 Create amdps
 }
 \usage{
-amdp(object, X, j, predictfcn, frac_to_build = 1, verbose = TRUE, 
+amdp(object, X, y, j, predictfcn, frac_to_build = 1, verbose = TRUE, 
 		plot = FALSE, logodds = F, ...)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -18,6 +18,9 @@ A fitted model of any kind.
 \item{X}{
 Matrix or data frame of predictors (observations along rows).  To the extend that \code{object} requires
 predictors in a certain format, \code{X} must obey that format. Note that \code{X} does not include the response.
+}
+\item{y}{
+The vector of responses of the dataset
 }
 \item{j}{
 Column number of \code{X} for which to calculate (... some noun goes here).  Alternatively \code{j}
@@ -61,10 +64,10 @@ before the object is returned.
 \item{xlab}{The x-axis label used for plotting}
 \item{nominal_axis}{Whether or not this variable is treated as a nominal variable for plotting purposes (if it has more than 5 unique values, it's not).}
 \item{N}{The number of rows in the inputted matrix or data frame}
+\item{N}{The number of rows in the inputted matrix or data frame}
 
-
-amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, 
-			logodds = logodds, xlab = xlab, num_unique_pts = num_unique_pts, N = N)
+	amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, 
+			logodds = logodds, xlab = xlab, nominal_axis = nominal_axis, N = N, range_y = range_y)
 			
 			
 }

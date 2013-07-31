@@ -1,7 +1,7 @@
 DEFAULT_COLORVEC = c("red", "green", "blue", "yellow2", "black", "violetred4", "cyan", "darkgrey", "orange2", "bisque3")
 
 cluster_amdp = function(amdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, colorvec, plot_pdp = FALSE,
-			x_quantile = FALSE, rug = TRUE, avg_lwd = 3, ...){
+			x_quantile = FALSE, rug = TRUE, avg_lwd = 3, prop_range_y = FALSE, centered = FALSE, ...){
 		
 	if (missing(nClusters) || !(nClusters %% 1 == 0 ) || (nClusters <= 0)){
 		stop("nClusters must be a positive integer.")
@@ -18,9 +18,17 @@ cluster_amdp = function(amdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, co
 		}
 	}
 	
+	cluster_centers = cl$centers
+	
+	if (centered){
+		for (k in 1 : nrow(cluster_centers)){
+			cluster_centers[k, ] = cluster_centers[k, ] - cluster_centers[k, 1] #ifelse(cluster_centers[o, 1] < 0, -cluster_centers[o, 1], cluster_centers[o, 1]
+		}		
+	}
+		
 	if (plot){
 		#y limits
-		rg = range(cl$centers) 
+		rg = range(cluster_centers) 
 		dist = rg[2] - rg[1]
 		rg_min = rg[1] - plot_margin * dist
 		rg_max = rg[2] + plot_margin * dist
@@ -33,16 +41,30 @@ cluster_amdp = function(amdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, co
 			ecdf_fcn = ecdf(grid)
 			grid = ecdf_fcn(grid)
 		}
-		plot(grid, cl$centers[1,], type = 'n', ylim = c(rg_min, rg_max), ylab = paste("cluster yhat"), xlab = xlab, xaxt = ifelse(amdp_obj$nominal_axis, "n", "s"))
-		starting_y_val = as.numeric(rank(cl$centers[, 1]))
+		plot(grid, as.numeric(cluster_centers[1, ]), 
+				type = 'n', 
+				ylim = c(rg_min, rg_max), 
+				ylab = paste("cluster yhat"), 
+				xlab = xlab, 
+				xaxt = ifelse(amdp_obj$nominal_axis, "n", "s"))
+		starting_y_val = rank(cl$centers[, 1]) #use original, non-centered object only
 		cluster_size = cl$size / sum(cl$size)
 		total_line_width = avg_lwd * nClusters
-		for(i in 1 : nrow(cl$centers)){		
+		for(i in 1 : nrow(cluster_centers)){		
 			#we re-order it so that when the code is rerun, randomness in kmeans
 			#doesn't switch which cluster goes with which color.
 			center_to_plot = which(starting_y_val == i)	
-			points(grid, cl$centers[center_to_plot, ], col = colorvec[i], type = "l", 
+			points(grid, cluster_centers[center_to_plot, ], col = colorvec[i], type = "l", 
 					lwd = cluster_size[center_to_plot] * total_line_width)
+		}
+		
+		if (prop_range_y){
+			at = seq(min(apdps), max(apdps), length.out = 5)
+			#we need to organize it so it's at zero
+			at = at - min(abs(at))
+			
+			labels = round(at / amdp_obj$range_y, 2)
+			axis(4, at = at, labels = labels)
 		}
 	}
 	
