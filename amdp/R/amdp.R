@@ -1,10 +1,10 @@
-MAX_NUM_UNIQUE_PTS_NOMINAL = 5
-
 amdp = function(object, X, y,
 		predictor, predictfcn, newdata, 
 		verbose = TRUE, plot = FALSE, 
 		frac_to_build = 1, indices_to_build = NULL, 
 		num_grid_pts, logodds = F, ...){
+
+	MAX_NUM_UNIQUE_PTS_NOMINAL = 5
 
 	#check for factor
 	if (class(X[, predictor]) == "factor" || class(X[, predictor]) == "character"){
