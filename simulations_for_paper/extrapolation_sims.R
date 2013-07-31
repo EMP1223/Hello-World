@@ -3,6 +3,7 @@ library(randomForest)
 library(gbm)   #boost
 library(e1071) #svm
 library(nnet)  #nnet
+library(gam)   #gam
 library(amdp)
 
 
@@ -35,11 +36,13 @@ y  = ex2_data$y
 
 #build all models
 rf_mod = randomForest(X, y)
+gam_mod = gam(y~., data=Xy, trace=F)
 lm_mod = lm(y~., data=Xy)
 
 #amdps
 a1_rf = amdp(rf_mod, X, predictor = 1, frac_to_build = 0.3)
 a1_lm = amdp(lm_mod, X, predictor = 1, frac_to_build = 0.3)
+a1_gam = amdp(gam_mod, X, y = Xy$y, predictor = 1, frac_to_build = 0.3)
 
 par(mfrow=c(1,2))
 
