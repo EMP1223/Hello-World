@@ -20,7 +20,8 @@ Matrix or data frame of predictors (observations along rows).  To the extend tha
 predictors in a certain format, \code{X} must obey that format. Note that \code{X} does not include the response.
 }
 \item{y}{
-The vector of responses of the dataset
+Optional vector of responses of the dataset, used to return the range of observed values. If missing, returns the 
+range over all points in the amdp grid.
 }
 \item{j}{
 Column number of \code{X} for which to calculate (... some noun goes here).  Alternatively \code{j}
