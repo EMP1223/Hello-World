@@ -42,6 +42,7 @@ amdp = function(object, X, y,
 		}
 	}
 
+		
 	######## (2)
 	N = nrow(X)
 	# grid points
@@ -110,7 +111,9 @@ amdp = function(object, X, y,
 	apdps = matrix(NA, nrow = nrow(X), ncol = length(grid_pts))
 	colnames(apdps) = grid_pts
 	#pred_test_values = seq(from = min_xj_seq, to = max_xj_seq, by = (max_xj_seq - min_xj_seq) / (num_grid_pts - 1))
-	
+
+	#Compute actual pdp. Note that this is averaged over the observations
+	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
 	for (t in 1 : length(grid_pts) ){
 		X[, predictor] = grid_pts[t]
 		if (use_generic){
@@ -122,6 +125,8 @@ amdp = function(object, X, y,
 		
 		if(verbose){cat(".")}			
 	}
+	#return X to its original state.
+	X[ ,predictor] = xj
 
 	#do logit if necessary
 	if (logodds){
@@ -160,10 +165,8 @@ amdp = function(object, X, y,
 		cat("y not passed, so range_y is range of amdps\n")
 	}
 
-	#Compute actual pdp. Note that this is averaged over the observations
-	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
 	amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, 
-			logodds = logodds, xlab = xlab, nominal_axis = nominal_axis, N = N, range_y = range_y)
+			logodds = logodds, xlab = xlab, nominal_axis = nominal_axis, N = N, range_y = range_y, Xamdp=X)
 	class(amdp_obj) = "amdp"
 	
 	if (plot){	#if the user wants to use a default plotting, they can get the plot in one line

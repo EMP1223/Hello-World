@@ -65,12 +65,8 @@ before the object is returned.
 \item{xlab}{The x-axis label used for plotting}
 \item{nominal_axis}{Whether or not this variable is treated as a nominal variable for plotting purposes (if it has more than 5 unique values, it's not).}
 \item{N}{The number of rows in the inputted matrix or data frame}
-\item{N}{The number of rows in the inputted matrix or data frame}
-
-	amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, 
-			logodds = logodds, xlab = xlab, nominal_axis = nominal_axis, N = N, range_y = range_y)
-			
-			
+\item{range_y}{If \code{y} is passed as an argument, the range of values. Otherwise the range of values in \code{apdps}.}
+\item{Xamdp}{A matrix whose i-th row is the true X-vector associated with the observation in the i-th row of \code{apdps}. Used by the \code{plot} function to color by levels of a categorical variable.}			
 }
 \examples{
 \dontrun{
