@@ -1,6 +1,5 @@
 \name{amdp-package}
 \alias{amdp-package}
-\alias{amdp}
 \docType{package}
 \title{
 What the package does (short line)

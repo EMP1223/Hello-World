@@ -39,12 +39,15 @@ for (j in colnames(X)){
 	amdb_bart_objs[[j]] = amdp(bart_machine, X, j, num_grid_pts = 100)
 }
 
+graphics.off()
 for (j in colnames(X)){
 	windows()
 	par(mfrow = c(1, 3))
+	amdb_bart_objs[[j]]$nominal_axis = FALSE
+	amdb_bart_objs[[j]]$range_y = 45
 	plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
-	plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02)
-	cluster_amdp(amdb_bart_objs[[j]], nClusters = 2)
+	plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE)
+	cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE)
 }
 
 

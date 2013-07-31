@@ -42,6 +42,13 @@ proportional to the number of observations in each cluster.
   \item{rug}{
 	Draw rugged lines on the x-axis representing the distribution of \code{X[, j]}.
 }
+\item{prop_range_y}{
+Make a second y-axis on the right with the proportional change in the range of the response variable.
+No effect if it's a non-centered plot.
+}
+\item{centered}{
+Join the clusters together at the minimum of \code{X[, j]} and call this point 0.
+}
 \item{\dots}{
 	Additional arguments, for example arguments to the \code{kmeans} routine.
 }

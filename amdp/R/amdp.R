@@ -1,6 +1,6 @@
 MAX_NUM_UNIQUE_PTS_NOMINAL = 5
 
-amdp = function(object, X, 
+amdp = function(object, X, y,
 		predictor, predictfcn, newdata, 
 		verbose = TRUE, plot = FALSE, 
 		frac_to_build = 1, indices_to_build = NULL, 
@@ -153,11 +153,12 @@ amdp = function(object, X,
 		nominal_axis = FALSE
 	}	
 
+	range_y = max(y) - min(y)
 
 	#Compute actual pdp. Note that this is averaged over the observations
 	#we sample, so this might be different from the 'true' pdp if frac_to_build < 0.
 	amdp_obj = list(apdps = apdps, gridpts = grid_pts, predictor = predictor, xj = xj, actual_prediction = actual_predictions, 
-			logodds = logodds, xlab = xlab, nominal_axis = nominal_axis, N = N)
+			logodds = logodds, xlab = xlab, nominal_axis = nominal_axis, N = N, range_y = range_y)
 	class(amdp_obj) = "amdp"
 	
 	if (plot){	#if the user wants to use a default plotting, they can get the plot in one line

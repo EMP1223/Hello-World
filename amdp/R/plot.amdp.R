@@ -1,6 +1,6 @@
 plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_pts_preds = TRUE,
 					colorvec, x_quantile = FALSE, plot_pdp = FALSE, plot_new_data = FALSE, 
-					centered = FALSE, rug = TRUE, centered_percentile = 0.05, ...){
+					centered = FALSE, rug = TRUE, prop_range_y = FALSE, centered_percentile = 0.05, ...){
 
 	#some argument checking
 	if (class(amdp_obj) != "amdp"){ 
@@ -77,6 +77,14 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 	if (amdp_obj$nominal_axis){
 		axis(1, at = sort(amdp_obj$xj), labels = sort(amdp_obj$xj))
 	}	
+	if (centered && prop_range_y){
+		at = seq(min(apdps), max(apdps), length.out = 5)
+		#we need to organize it so it's at zero
+		at = at - min(abs(at))
+		
+		labels = round(at / amdp_obj$range_y, 2)
+		axis(4, at = at, labels = labels)
+	}
 	
 	for (i in 1 : nrow(apdps)){
 		points(grid, apdps[i, ], col = colorvec[i], type = "l")
