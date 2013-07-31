@@ -1,7 +1,7 @@
-DEFAULT_COLORVEC = c("red", "green", "blue", "yellow2", "black", "violetred4", "cyan", "darkgrey", "orange2", "bisque3")
-
 cluster_amdp = function(amdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, colorvec, plot_pdp = FALSE,
 			x_quantile = FALSE, rug = TRUE, avg_lwd = 3, prop_range_y = FALSE, centered = FALSE, ...){
+
+	DEFAULT_COLORVEC = c("red", "green", "blue", "yellow2", "black", "violetred4", "cyan", "darkgrey", "orange2", "bisque3")
 		
 	if (missing(nClusters) || !(nClusters %% 1 == 0 ) || (nClusters <= 0)){
 		stop("nClusters must be a positive integer.")
