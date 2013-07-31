@@ -46,6 +46,11 @@ pdp because the averaging is done only over those observations sampled to build 
   \item{rug}{
 	Draw rugged lines on the x-axis representing the distribution of \code{X[, j]}.
 }
+
+\item{prop_range_y}{
+For centered plots only, make a second y-axis on the right with the proportional change in the range of the response variable.
+No effect if it's a non-centered plot.
+}
   \item{\dots}{
 	Additional arguments passed to plot.
 }
