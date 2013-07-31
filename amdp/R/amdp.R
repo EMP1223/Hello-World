@@ -161,7 +161,7 @@ amdp = function(object, X, y,
 	if(!missing(y)){
 		range_y = max(y) - min(y)
 	}else{
-		range_y = (max(apdps)-min(apdps))
+		range_y = (max(apdps) - min(apdps))
 		cat("y not passed, so range_y is range of amdps\n")
 	}
 

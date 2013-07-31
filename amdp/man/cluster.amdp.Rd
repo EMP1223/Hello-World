@@ -49,6 +49,9 @@ No effect if it's a non-centered plot.
 \item{centered}{
 Join the clusters together at the minimum of \code{X[, j]} and call this point 0.
 }
+\item{plot_legend}{
+If true, this prints a legend in the top left of the plot showing the proportion of the data in the \code{nCluster} clusters.
+}
 \item{\dots}{
 	Additional arguments, for example arguments to the \code{kmeans} routine.
 }

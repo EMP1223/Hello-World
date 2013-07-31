@@ -1,5 +1,5 @@
 cluster_amdp = function(amdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, colorvec, plot_pdp = FALSE,
-			x_quantile = FALSE, rug = TRUE, avg_lwd = 3, prop_range_y = FALSE, centered = FALSE, ...){
+			x_quantile = FALSE, rug = TRUE, avg_lwd = 3, prop_range_y = FALSE, centered = FALSE, plot_legend = FALSE, ...){
 
 	DEFAULT_COLORVEC = c("red", "green", "blue", "yellow2", "black", "violetred4", "cyan", "darkgrey", "orange2", "bisque3")
 		
@@ -50,10 +50,13 @@ cluster_amdp = function(amdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, co
 		starting_y_val = rank(cl$centers[, 1]) #use original, non-centered object only
 		cluster_size = cl$size / sum(cl$size)
 		total_line_width = avg_lwd * nClusters
+		
+		centers_to_plot = array(NA, nrow(cluster_centers))
 		for(i in 1 : nrow(cluster_centers)){		
 			#we re-order it so that when the code is rerun, randomness in kmeans
 			#doesn't switch which cluster goes with which color.
 			center_to_plot = which(starting_y_val == i)	
+			centers_to_plot[i] = center_to_plot
 			points(grid, cluster_centers[center_to_plot, ], col = colorvec[i], type = "l", 
 					lwd = cluster_size[center_to_plot] * total_line_width)
 		}
@@ -66,11 +69,18 @@ cluster_amdp = function(amdp_obj, nClusters, plot = TRUE, plot_margin = 0.05, co
 			labels = round(at / amdp_obj$range_y, 2)
 			axis(4, at = at, labels = labels)
 		}
+		
+		if (amdp_obj$nominal_axis){
+			axis(1, at = sort(amdp_obj$xj), labels = sort(amdp_obj$xj))
+		}
+		
+		#legend
+		if (plot_legend){
+			prop_data_in_clusters = round(cl$size / sum(cl$size), 2)
+			
+			legend("topleft", inset = 0.01, legend = as.character(prop_data_in_clusters), fill = colorvec, cex = 0.8)
+		}
 	}
-	
-	if (amdp_obj$nominal_axis){
-		axis(1, at = sort(amdp_obj$xj), labels = sort(amdp_obj$xj))
-	}	
-	
+
 	invisible(cl)
 }

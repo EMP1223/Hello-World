@@ -33,6 +33,9 @@ X$medv = NULL
 
 bart_machine = build_bart_machine(X, y)
 
+windows()
+investigate_var_importance(bart_machine)
+
 #create amdp's for all features in the boston housing data
 amdb_bart_objs = list()
 for (j in colnames(X)){
@@ -43,66 +46,42 @@ graphics.off()
 for (j in colnames(X)){
 	windows()
 	par(mfrow = c(1, 3))
-	amdb_bart_objs[[j]]$nominal_axis = FALSE
-	amdb_bart_objs[[j]]$range_y = 45
 	plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
 	plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE)
 	cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE)
 }
 
+j = "age"
+plot(amdb_bart_objs[[j]], frac_to_plot = 0.1, x_quantile = FALSE)
+plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, x_quantile = FALSE, plot_orig_pts_preds = FALSE)
+cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, plot_legend = TRUE)
 
+j = "rm"
+plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
+plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, plot_orig_pts_preds = FALSE)
+cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, plot_legend = TRUE)
+
+
+j = "chas"
+plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
+plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, plot_orig_pts_preds = FALSE)
+cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, plot_legend = TRUE)
+
+j = "black"
+plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
+plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, plot_orig_pts_preds = FALSE)
+cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, plot_legend = TRUE)
+
+
+#remind me of the linear model
 lm_mod = lm(medv ~ ., Boston)
-apdp(lm_mod, X, 6, num_grid_pts = 30)
+summary(lm_mod)
 
-lm_mod = lm(medv ~ ., Boston)
-apdp(lm_mod, X, 6, num_grid_pts = 30)
-apdp(lm_mod, X, "lstat", num_grid_pts = 30)
-
-library(randomForest)
-rf_mod = randomForest(medv ~ ., Boston)
-head(X)
-#crim zn indus chas   nox    rm  age    dis rad tax ptratio  black lstat
-
-apdp(rf_mod, X, "crim", num_grid_pts = 50, pct_to_plot = 0.2)
-apdp(rf_mod, X, "zn", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "indus", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "chas", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "nox", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "rm", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "age", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "dis", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "tax", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "ptratio", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "black", num_grid_pts = 50, pct_to_plot = 0.05)
-apdp(rf_mod, X, "lstat", num_grid_pts = 50, pct_to_plot = 0.05)
-
-#library(gbm)
-#gbm_mod = gbm(medv ~ ., data = Boston)
-#apdp(gbm_mod, X, 6, num_grid_pts = 30, n.trees = 500)
+#pub images
 
 
-rf_mod = randomForest(medv ~ ., Boston)
-apdp_obj = apdp(rf_mod, X, "rm", num_grid_pts = 30)
-
-#scramble this
-#apdps_scrambled = matrix(NA, nrow = nrow(apdp_obj$apdps), ncol = ncol(apdp_obj$apdps))
-#for (j in 1 : ncol(apdp_obj$apdps)){
-#	apdps_scrambled[, j] = sample(apdp_obj$apdps[, j])
-#}
-#
-#for (b in 1 : num_permutes){
-#	#permute apdps_diffs
-#	
-#	apdps_diffs = t(apply(apdps_scrambled, 1, diff))
-#	for (j in 1 : ncol(apdps_scrambled) - 1){
-#		apdps_diffs[, j] = sample(apdps_diffs[, j])
-#		
-#	}
-#	apdp_diff_plot(apdp_obj, apdps_diffs, plot_margin)
-#}
 
 
-apdp_diffs(apdp_obj)
 
 
 
