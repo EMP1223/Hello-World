@@ -1,0 +1,9 @@
+Package: amdp
+Type: Package
+Title: Visualization of Fitted Values
+Version: 0.1
+Date: 2013-07-10
+Author: Somebody
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: It is cool. You shoudl use it.
+License: whatevs

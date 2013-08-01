@@ -1,0 +1,6 @@
+exportPattern("amdp")
+#some methods
+S3method(plot, amdp)
+
+S3method(print, amdp)
+S3method(summary, amdp)
