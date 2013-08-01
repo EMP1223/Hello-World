@@ -31,28 +31,33 @@ X = Boston
 y = X$medv
 X$medv = NULL
 
+set_bart_machine_num_cores(4)
 bart_machine = build_bart_machine(X, y)
 
-windows()
-investigate_var_importance(bart_machine)
+#windows()
+#investigate_var_importance(bart_machine)
 
 #create amdp's for all features in the boston housing data
 amdb_bart_objs = list()
 for (j in colnames(X)){
-	amdb_bart_objs[[j]] = amdp(bart_machine, X, j, num_grid_pts = 100)
+	amdb_bart_objs[[j]] = amdp(bart_machine, X, y, j)
 }
+save(amdb_bart_objs, file = "amdb_bart_objs.RData")
 
 graphics.off()
 for (j in colnames(X)){
 	windows()
 	par(mfrow = c(1, 3))
+	amdb_bart_objs[[j]]$range_y
+	amdb_bart_objs[[j]]$nominal_axis = TRUE
 	plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
-	plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE)
-	cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE)
+	plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, x_quantile = FALSE)
+	cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, x_quantile = FALSE)
 }
 
+par(mfrow = c(1, 3))
 j = "age"
-plot(amdb_bart_objs[[j]], frac_to_plot = 0.1, x_quantile = FALSE)
+plot(amdb_bart_objs[[j]], frac_to_plot = 0.1, x_quantile = FALSE, color_by = "nox")
 plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, x_quantile = FALSE, plot_orig_pts_preds = FALSE)
 cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, plot_legend = TRUE)
 
@@ -76,6 +81,19 @@ cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered =
 #remind me of the linear model
 lm_mod = lm(medv ~ ., Boston)
 summary(lm_mod)
+
+lm_mod = lm(medv ~ . * age, Boston)
+summary(lm_mod)
+
+lm_mod = lm(medv ~ . * rm, Boston)
+summary(lm_mod)
+
+lm_mod = lm(medv ~ . * chas, Boston)
+summary(lm_mod)
+
+lm_mod = lm(medv ~ . * black, Boston)
+summary(lm_mod)
+
 
 #pub images
 

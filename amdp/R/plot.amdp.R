@@ -118,9 +118,7 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 			xaxt = ifelse(amdp_obj$nominal_axis, "n", "s"), 
 			...)
 	
-	if (rug){
-		rug(amdp_obj$xj)	
-	}
+
 	
 	
 	if (amdp_obj$nominal_axis){
@@ -165,9 +163,15 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 		points(xj, yhat_actual, col = colorvec, pch = 16)
 
 	}
-	if(is.null(legend_text)){
+	
+	if (rug){
+		rug(amdp_obj$xj)	
+	}
+	
+	
+	if (is.null(legend_text)){
 		invisible(list(plot_points_indices = plot_points_indices, legend_text = legend_text))
-	}else{
+	} else {
 		invisible(list(plot_points_indices = plot_points_indices, legend_text = legend_text))
 	}
 }
