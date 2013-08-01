@@ -1,15 +1,15 @@
 plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_pts_preds = TRUE,
-					colorvec, x_quantile = FALSE, plot_pdp = FALSE, plot_new_data = FALSE, 
+					colorvec, color_by = NULL, x_quantile = FALSE, plot_pdp = FALSE, plot_new_data = FALSE, 
 					centered = FALSE, rug = TRUE, prop_range_y = FALSE, centered_percentile = 0.05, ...){
-
+	
+	DEFAULT_COLORVEC = c("red", "green", "blue", "yellow2", "black", "violetred4", "cyan", "darkgrey", "orange2", "bisque3")
 	#some argument checking
 	if (class(amdp_obj) != "amdp"){ 
 		stop("object is not of class 'amdp'")
 	}
 	if (frac_to_plot <= 0 || frac_to_plot > 1 ){
 		stop("frac_to_plot must be in (0,1]")
-	}
-
+	
 	#extract the grid and lines to plot	
 	grid = amdp_obj$gridpts 
 	n_grid = length(grid)
@@ -21,13 +21,60 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 	apdps = amdp_obj$apdps
 	N = nrow(apdps)
 
-	if (missing(colorvec)){
+	#### figure out the colorvec.
+	#case 1: random
+	if (missing(colorvec) && missing(colorby)){
 		colorvec = sort(rgb(runif(N, 0, 0.7), runif(N, 0, 0.7), runif(N, 0, 0.7)))
-	} else {
-		if (length(colorvec) < N){
+	} 
+	#case 2: both colorvec and color_by specified, so print a warning but use colorvec.
+	if(!missing(colorvec) && !missing(color_by)){
+		if (!missing(colorvec) && length(colorvec) < N){
 			stop("color vector has length ", length(colorvec), " but there are ", N, " lines to plot")
 		}
+		warning("Both colorvec and color_by_predictor are specified...using colorvec.")
+	}	
+	#case 3: colorvec missing but color_by is specified.
+	if(!missing(color_by) && missing(colorvec)){
+		#argument checking first:
+		arg_type = class(color_by)
+		if(!(arg_type %in% c("character", "numeric"))){
+			stop("color_by must be a column name in X or a column index")
+		}
+		if(class(color_by) == "character"){
+			if(!(color_by %in% names(amdp_obj$Xamdp))){
+				stop("The predictor name given by color_by was not found in the X matrix")
+			}
+		} else{  #check numeric
+			if( color_by < 1 || color_by > ncol(amdp_obj$Xamdp) || (color_by%%1 !=0)){
+				stop("color_by must be a column name in X or a column index")
+			}
+		}
+		x_color_by = amdp_obj$Xamdp[, color_by]
+		num_x_color_by = length(unique(x_color_by))		
+		x_unique = unique(x_numeric)
+		
+		#if there are 10 or fewer unique values of this x value, we use the
+		#same color in DEFAULT_COLORVEC for each. Otherwise, we use a rainbow.
+		if(x_unique <= 10){
+			which_category = match( x_numeric, x_unique)
+			colorvec = DEFAULT_COLORVEC[which_category]
+			
+			#now make the legend.
+			legend_text = as.data.frame(cbind( x_unique ,colorvec))
+			names(legend_text) = c("x-value","color")
+			cat("Key to colors in AMDP\n")
+			print(legend_text)			
+		}
+		else{
+			if(is.factor(x_color_by)){
+				warning("color_by is a factor with greater than 10 levels: coercing to numeric.")
+				x_color_by = as.numeric(x_color_by)
+			}			
+			#easy, just smallest to largest with ties broken randomly.
+			colorvec = rainbow(N)[rank(x_color_by, ties="random")]       
+		}
 	}
+
 	
 	#pull out a fraction of the lines to plot
 	plot_points_indices = which(as.logical(rbinom(N, 1, frac_to_plot)))
@@ -52,8 +99,6 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 	if (x_quantile){
 		xlab = paste("quantile(", xlab, ")", sep = "")
 	}
-
-
 	
 	#plot all the prediction lines
 	if (amdp_obj$logodds){
@@ -116,7 +161,16 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 		points(xj, yhat_actual, col = colorvec, pch = 16)
 
 	}
+
+	#check if we need a legend.
+	if(do_color_by){
+		x_color_by = amdp_obj$Xamdp[plot_points_indices, color_by]		
+		if(length(unique(x_color_by)) <= 10 ){  #we need a legend.
+			x_unique = unique(x_color_by)
+			
+		}		
+	}
 	
-	invisible(list(plot_points_indices = plot_points_indices))
+	invisible(list(plot_points_indices = plot_points_indices, legend_text = legend_text))
 }
 
