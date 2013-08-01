@@ -9,7 +9,7 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 	}
 	if (frac_to_plot <= 0 || frac_to_plot > 1 ){
 		stop("frac_to_plot must be in (0,1]")
-	
+	}
 	#extract the grid and lines to plot	
 	grid = amdp_obj$gridpts 
 	n_grid = length(grid)
@@ -22,8 +22,9 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 	N = nrow(apdps)
 
 	#### figure out the colorvec.
+	legend_text = NULL #default is no legend.
 	#case 1: random
-	if (missing(colorvec) && missing(colorby)){
+	if (missing(colorvec) && missing(color_by)){
 		colorvec = sort(rgb(runif(N, 0, 0.7), runif(N, 0, 0.7), runif(N, 0, 0.7)))
 	} 
 	#case 2: both colorvec and color_by specified, so print a warning but use colorvec.
@@ -50,19 +51,22 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 			}
 		}
 		x_color_by = amdp_obj$Xamdp[, color_by]
-		num_x_color_by = length(unique(x_color_by))		
-		x_unique = unique(x_numeric)
+		x_unique = unique(x_color_by)
+		num_x_color_by = length(x_unique)		
+		
 		
 		#if there are 10 or fewer unique values of this x value, we use the
 		#same color in DEFAULT_COLORVEC for each. Otherwise, we use a rainbow.
-		if(x_unique <= 10){
-			which_category = match( x_numeric, x_unique)
+		if(num_x_color_by <= 10){
+			
+			which_category = match(x_color_by, x_unique)
 			colorvec = DEFAULT_COLORVEC[which_category]
 			
 			#now make the legend.
-			legend_text = as.data.frame(cbind( x_unique ,colorvec))
-			names(legend_text) = c("x-value","color")
-			cat("Key to colors in AMDP\n")
+			legend_text = as.data.frame(cbind( x_unique , DEFAULT_COLORVEC[1:num_x_color_by]))
+			x_column_name = ifelse(is.character(color_by), color_by, paste("x_",color_by,sep=""))
+			names(legend_text) = c(x_column_name,"color")
+			cat("AMDP Color Legend\n")
 			print(legend_text)			
 		}
 		else{
@@ -161,16 +165,10 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 		points(xj, yhat_actual, col = colorvec, pch = 16)
 
 	}
-
-	#check if we need a legend.
-	if(do_color_by){
-		x_color_by = amdp_obj$Xamdp[plot_points_indices, color_by]		
-		if(length(unique(x_color_by)) <= 10 ){  #we need a legend.
-			x_unique = unique(x_color_by)
-			
-		}		
+	if(is.null(legend_text)){
+		invisible(list(plot_points_indices = plot_points_indices, legend_text = legend_text))
+	}else{
+		invisible(list(plot_points_indices = plot_points_indices, legend_text = legend_text))
 	}
-	
-	invisible(list(plot_points_indices = plot_points_indices, legend_text = legend_text))
 }
 
