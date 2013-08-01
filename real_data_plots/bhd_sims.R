@@ -48,8 +48,6 @@ graphics.off()
 for (j in colnames(X)){
 	windows()
 	par(mfrow = c(1, 3))
-	amdb_bart_objs[[j]]$range_y
-	amdb_bart_objs[[j]]$nominal_axis = TRUE
 	plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
 	plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, x_quantile = FALSE)
 	cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, x_quantile = FALSE)
@@ -57,24 +55,24 @@ for (j in colnames(X)){
 
 par(mfrow = c(1, 3))
 j = "age"
-plot(amdb_bart_objs[[j]], frac_to_plot = 0.1, x_quantile = FALSE, color_by = "nox")
-plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, x_quantile = FALSE, plot_orig_pts_preds = FALSE)
+plot(amdb_bart_objs[[j]], frac_to_plot = 0.1, x_quantile = FALSE, color_by = "dis")
+plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, x_quantile = FALSE, plot_orig_pts_preds = FALSE, color_by = "dis")
 cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, plot_legend = TRUE)
 
 j = "rm"
-plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
-plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, plot_orig_pts_preds = FALSE)
+plot(amdb_bart_objs[[j]], frac_to_plot = 0.1, color_by = "nox")
+plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, plot_orig_pts_preds = FALSE, color_by = "nox")
 cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, plot_legend = TRUE)
 
 
 j = "chas"
-plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
-plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, plot_orig_pts_preds = FALSE)
+plot(amdb_bart_objs[[j]], frac_to_plot = 0.1, color_by = "crim")
+plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, plot_orig_pts_preds = FALSE, color_by = "crim")
 cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, plot_legend = TRUE)
 
 j = "black"
-plot(amdb_bart_objs[[j]], frac_to_plot = 0.1)
-plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, plot_orig_pts_preds = FALSE)
+plot(amdb_bart_objs[[j]], frac_to_plot = 0.1, color_by = "crim")
+plot(amdb_bart_objs[[j]], frac_to_plot = 1, centered = 0.02, prop_range_y = TRUE, plot_orig_pts_preds = FALSE, color_by = "crim")
 cluster_amdp(amdb_bart_objs[[j]], nClusters = 2, prop_range_y = TRUE, centered = TRUE, plot_legend = TRUE)
 
 

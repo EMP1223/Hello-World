@@ -2,7 +2,7 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 					colorvec, color_by = NULL, x_quantile = FALSE, plot_pdp = FALSE, plot_new_data = FALSE, 
 					centered = FALSE, rug = TRUE, prop_range_y = FALSE, centered_percentile = 0.05, ...){
 	
-	DEFAULT_COLORVEC = c("red", "green", "blue", "yellow2", "black", "violetred4", "cyan", "darkgrey", "orange2", "bisque3")
+	DEFAULT_COLORVEC = c("forestgreen", "darkred", "brown", "black", "green", "yellow", "pink", "orange", "forestgreen", "grey")
 	#some argument checking
 	if (class(amdp_obj) != "amdp"){ 
 		stop("object is not of class 'amdp'")
@@ -57,25 +57,49 @@ plot.amdp = function(amdp_obj, plot_margin = 0.05, frac_to_plot = 1, plot_orig_p
 		
 		#if there are 10 or fewer unique values of this x value, we use the
 		#same color in DEFAULT_COLORVEC for each. Otherwise, we use a rainbow.
-		if(num_x_color_by <= 10){
+		if (num_x_color_by <= 10){
 			
 			which_category = match(x_color_by, x_unique)
 			colorvec = DEFAULT_COLORVEC[which_category]
 			
 			#now make the legend.
-			legend_text = as.data.frame(cbind( x_unique , DEFAULT_COLORVEC[1:num_x_color_by]))
-			x_column_name = ifelse(is.character(color_by), color_by, paste("x_",color_by,sep=""))
+			legend_text = as.data.frame(cbind(x_unique, DEFAULT_COLORVEC[1 : num_x_color_by]))
+			x_column_name = ifelse(is.character(color_by), color_by, paste("x_", color_by, sep = ""))
 			names(legend_text) = c(x_column_name,"color")
 			cat("AMDP Color Legend\n")
 			print(legend_text)			
-		}
-		else{
-			if(is.factor(x_color_by)){
+		} else {
+			if (is.factor(x_color_by)){
 				warning("color_by is a factor with greater than 10 levels: coercing to numeric.")
 				x_color_by = as.numeric(x_color_by)
 			}			
 			#easy, just smallest to largest with ties broken randomly.
-			colorvec = rainbow(N)[rank(x_color_by, ties="random")]       
+		
+#			alpha_blend_colors = matrix(0.5, nrow = N, ncol = 4)
+#			alpha_blend_colors[, 3] = 1
+#			alpha_blend_colors[, 4] = c(seq(from = 0.2, to = 1, length.out = ceiling(N / 2)), rep(1, N - ceiling(N / 2)))
+#			other_color_seq = seq(from = 1, to = 0, length.out = N - ceiling(N / 2))
+#			alpha_blend_colors[(ceiling(N / 2) + 1) : N, 3] = seq(from = 1, to = 0, length.out = N - ceiling(N / 2))
+#			alpha_blend_colors[(ceiling(N / 2) + 1) : N, 2] = seq(from = 0.5, to = 0, length.out = N - ceiling(N / 2))
+#			alpha_blend_colors[(ceiling(N / 2) + 1) : N, 1] = seq(from = 0.5, to = 0, length.out = N - ceiling(N / 2))
+	
+			alpha_blend_colors = matrix(0, nrow = N, ncol = 4)
+			alpha_blend_colors[, 3] = 1
+			alpha_blend_colors[, 4] = c(seq(from = 0.2, to = 1, length.out = ceiling(N / 2)), rep(1, N - ceiling(N / 2)))
+			alpha_blend_colors[(ceiling(N / 2) + 1) : N, 3] = seq(from = 1, to = 0, length.out = N - ceiling(N / 2))
+			alpha_blend_colors[, 2] = seq(from = 0.6, to = 0, length.out = N)
+			alpha_blend_colors[, 1] = seq(from = 0.6, to = 0, length.out = N)
+			
+			rgbs = array(NA, N)
+			for (i in 1 : N){
+				rgbs[i] = rgb(alpha_blend_colors[i, 1], alpha_blend_colors[i, 2], alpha_blend_colors[i, 3], alpha_blend_colors[i, 4])
+			}
+			
+#			plot(1:200,1:200, type = "n")
+#			for (i in 1 : N){
+#				abline(a = i, b = 0, col = rgbs[i])
+#			}
+			colorvec = rgbs[sort(x_color_by, index.return = T)$ix]
 		}
 	}
 

@@ -30,17 +30,16 @@ rf_mod = randomForest(X, y)
 
 
 library(amdp)
-amdp_obj = amdp(rf_mod, X, predictor = 2, frac_to_build = 1)
+amdp_obj = amdp(rf_mod, X, y, predictor = 2, frac_to_build = 1)
 
 #plot only 10% of curves with quantiles, actual pdp, and original points. 
 colorvec = array(NA, nrow(X))
 for (i in 1 : nrow(X)){
 	colorvec[i] = ifelse(X[i, 3] == 1, "red", "green")
 }
-plot(amdp_obj, x_quantile = F, plot_pdp = T, frac_to_plot = 0.1, colorvec = colorvec)
+plot(amdp_obj, x_quantile = F, plot_pdp = T, frac_to_plot = 0.1, color_by = 3)
 windows()
 cluster.amdp(amdp_obj, nClusters = 2)
-
 
 
 
